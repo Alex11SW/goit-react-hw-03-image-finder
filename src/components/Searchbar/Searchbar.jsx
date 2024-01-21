@@ -28,16 +28,25 @@ class Searchbar extends Component {
   }
 
   async fetchPosts() {
-    const { search, currentPage } = this.state;
+    const { search, currentPage, posts } = this.state;
     try {
       this.setState({
         loading: true,
       });
       const { data } = await searchPosts(search, currentPage);
       console.log(data);
-      this.setState((prevState) => ({
-        posts: data ? [...prevState.posts, ...data.hits] : prevState.posts,
-      }));
+      if (currentPage === 1) {
+        this.setState({
+          posts: data?.hits || [],
+        });
+      } else {
+        const newPosts = data?.hits.filter(
+          (post) => !posts.some((p) => p.id === post.id)
+        );
+        this.setState((prevState) => ({
+          posts: [...prevState.posts, ...newPosts],
+        }));
+      }
     } catch (error) {
       this.setState({
         error: error.message,
@@ -90,6 +99,8 @@ class Searchbar extends Component {
     const { posts, loading, error, postDetails } = this.state;
 
     const isPost = Boolean(posts.length);
+    const shouldRenderLoadMore =
+      isPost && !loading && !error && posts.length % 12 === 0;
 
     return (
       <>
@@ -99,7 +110,7 @@ class Searchbar extends Component {
         {isPost && (
           <ImageGallery hits={posts} onImageClick={this.handleImageClick} />
         )}
-        {isPost && (
+        {shouldRenderLoadMore && (
           <Button onClick={handleLoadMore} type="button">
             Load more
           </Button>
