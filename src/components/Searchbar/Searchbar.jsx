@@ -17,7 +17,7 @@ class Searchbar extends Component {
     modalOpen: false,
     postDetails: {},
   };
-  async componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { search, currentPage } = this.state;
     if (
       (search && search !== prevState.search) ||
@@ -35,18 +35,16 @@ class Searchbar extends Component {
       });
       const { data } = await searchPosts(search, currentPage);
       console.log(data);
-      if (currentPage === 1) {
-        this.setState({
-          posts: data?.hits || [],
-        });
-      } else {
-        const newPosts = data?.hits.filter(
-          (post) => !posts.some((p) => p.id === post.id)
-        );
-        this.setState((prevState) => ({
-          posts: [...prevState.posts, ...newPosts],
-        }));
-      }
+
+      const newPosts =
+        currentPage === 1
+          ? data?.hits || []
+          : data?.hits.filter((post) => !posts.some((p) => p.id === post.id));
+
+      this.setState((prevState) => ({
+        posts: [...prevState.posts, ...newPosts],
+      }));
+      console.log("New posts added:", newPosts);
     } catch (error) {
       this.setState({
         error: error.message,
@@ -59,21 +57,11 @@ class Searchbar extends Component {
   }
 
   handleSearch = (searchQuery) => {
-    const tags = searchQuery.toLowerCase();
-    this.setState(
-      {
-        search: searchQuery,
-        currentPage: 1,
-      },
-      async () => {
-        const { search } = this.state;
-        const { data } = await searchPosts(search, tags);
-        const filteredHits = data?.hits || [];
-        this.setState({
-          posts: filteredHits,
-        });
-      }
-    );
+    this.setState({
+      search: searchQuery,
+      currentPage: 1,
+      posts: [],
+    });
   };
   handleImageClick = (webformatURL) => {
     this.setState({
