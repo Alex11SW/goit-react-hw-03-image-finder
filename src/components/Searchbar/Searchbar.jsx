@@ -44,7 +44,6 @@ class Searchbar extends Component {
       this.setState((prevState) => ({
         posts: [...prevState.posts, ...newPosts],
       }));
-      console.log("New posts added:", newPosts);
     } catch (error) {
       this.setState({
         error: error.message,
@@ -71,11 +70,13 @@ class Searchbar extends Component {
       },
     });
   };
+
   handleLoadMore = () => {
     this.setState((prevState) => ({
       currentPage: prevState.currentPage + 1,
     }));
   };
+
   handleCloseModal = () => {
     this.setState({
       modalOpen: false,
