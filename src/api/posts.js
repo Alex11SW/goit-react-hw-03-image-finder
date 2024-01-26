@@ -13,12 +13,12 @@ const instance = axios.create({
   },
 });
 
-export const getAllPosts = (q) => {
-  return instance.get("/", { params: { q, page: 1, _limit: 12 } });
+export const getAllPosts = (q, page = 1, per_page = 12) => {
+  return instance.get("/", { params: { q, page, per_page } });
 };
 
-export const searchPosts = (q, tags, page = 1, per_page = 12) => {
+export const searchPosts = (q, page = 1, per_page = 12) => {
   return instance.get("/", {
-    params: { q, tags, page, per_page },
+    params: { q, page, per_page },
   });
 };
